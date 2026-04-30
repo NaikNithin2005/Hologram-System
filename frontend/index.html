@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Hologram System</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- MediaPipe JS CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="ui-layer">
+        <header>
+            <h1>Holographic Core <span>v1.0</span></h1>
+            <p id="status-text" class="status offline">System Offline</p>
+        </header>
+
+        <div class="controls-info">
+            <div class="info-card">
+                <h3>Voice Commands (Click anywhere to start)</h3>
+                <ul>
+                    <li>"Rotate", "Spin", "Start"</li>
+                    <li>"Zoom", "Closer"</li>
+                    <li>"Next", "Switch"</li>
+                    <li>"Stop", "Pause"</li>
+                </ul>
+            </div>
+            <div class="info-card">
+                <h3>Gestures</h3>
+                <ul>
+                    <li>🖐️ Open Palm: Move slowly to Rotate</li>
+                    <li>👍 Thumb Up: Next Object</li>
+                    <li>👆 Index Finger: Previous Object</li>
+                    <li>✊ Closed Fist (0 Fingers): Stop</li>
+                    <li>🤏 Pinch: Dynamic Zoom In/Out</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="current-state">
+            <p><strong>Gesture:</strong> <span id="gesture-display">None</span></p>
+            <p><strong>Voice:</strong> <span id="voice-display">None</span></p>
+            <p><strong>Object:</strong> <span id="object-display">Cube</span></p>
+        </div>
+        
+        <button id="toggle-hologram" class="glow-btn">Toggle Hologram Mode</button>
+    </div>
+
+    <!-- The 3D Canvas Container -->
+    <div id="canvas-container"></div>
+    
+    <!-- Hidden Video Element for MediaPipe -->
+    <video id="input_video" style="display: none;"></video>
+    
+    <!-- Gesture Detector script -->
+    <script src="gesture_detector.js"></script>
+    
+    <script src="main.js"></script>
+    <script src="voice_recognizer.js"></script>
+</body>
+</html>
