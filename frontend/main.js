@@ -103,20 +103,20 @@ document.getElementById('toggle-hologram').addEventListener('click', () => {
 });
 
 // Control Functions
-window.rotateObject = function() {
+window.rotateObject = function () {
     isRotating = true;
 };
 
-window.stopObject = function() {
+window.stopObject = function () {
     isRotating = false;
 };
 
-window.zoomObject = function() {
+window.zoomObject = function () {
     // Toggle zoom in and out
     targetZoom = targetZoom === 10 ? 5 : 10;
 };
 
-window.nextObject = function() {
+window.nextObject = function () {
     scene.remove(currentObject);
     currentObjectIndex = (currentObjectIndex + 1) % objects.length;
     currentObject = objects[currentObjectIndex].mesh;
@@ -125,7 +125,7 @@ window.nextObject = function() {
     document.getElementById('object-display').innerText = objects[currentObjectIndex].name;
 };
 
-window.previousObject = function() {
+window.previousObject = function () {
     scene.remove(currentObject);
     currentObjectIndex = (currentObjectIndex - 1 + objects.length) % objects.length;
     currentObject = objects[currentObjectIndex].mesh;
@@ -134,11 +134,25 @@ window.previousObject = function() {
     document.getElementById('object-display').innerText = objects[currentObjectIndex].name;
 };
 
-window.setZoomValue = function(val) {
+window.setZoomValue = function (val) {
     targetZoom = val;
 };
 
-window.setObjectAndRotate = function(count) {
+window.jumpToObject = function (name) {
+    const index = objects.findIndex(obj => obj.name.toLowerCase() === name.toLowerCase());
+    if (index !== -1 && index !== currentObjectIndex) {
+        scene.remove(currentObject);
+        currentObjectIndex = index;
+        currentObject = objects[currentObjectIndex].mesh;
+        currentObject.rotation.set(0, 0, 0);
+        scene.add(currentObject);
+        document.getElementById('object-display').innerText = objects[currentObjectIndex].name;
+        return true;
+    }
+    return false;
+};
+
+window.setObjectAndRotate = function (count) {
     if (count === 0) {
         isRotating = false;
     } else if (count >= 1 && count <= 10) {
@@ -155,26 +169,26 @@ window.setObjectAndRotate = function(count) {
     }
 };
 
-window.rotateObject = function() {
+window.rotateObject = function () {
     isRotating = true;
     autoRotateSpeed.y = 0.02;
 };
 
-window.rotateLeft = function() {
+window.rotateLeft = function () {
     isRotating = true;
     autoRotateSpeed.y = -0.02; // Reverse direction
 };
 
-window.rotateRight = function() {
+window.rotateRight = function () {
     isRotating = true;
     autoRotateSpeed.y = 0.02; // Normal direction
 };
 
-window.stopObject = function() {
+window.stopObject = function () {
     isRotating = false;
 };
 
-window.manualRotate = function(dx, dy) {
+window.manualRotate = function (dx, dy) {
     isRotating = false; // Override auto-rotate
     // Reverse dx for mirror effect
     currentObject.rotation.y += -dx * 5.0;
@@ -207,7 +221,7 @@ function animate() {
     } else {
         // Hologram 4-split view
         renderer.setScissorTest(true);
-        
+
         const w = window.innerWidth;
         const h = window.innerHeight;
         const size = Math.min(w, h) / 3;
@@ -216,39 +230,39 @@ function animate() {
         const offset = size / 2;
 
         // Bottom view (holoCameras[0] - +Z)
-        renderer.setViewport(cx - size/2, cy - offset - size, size, size);
-        renderer.setScissor(cx - size/2, cy - offset - size, size, size);
+        renderer.setViewport(cx - size / 2, cy - offset - size, size, size);
+        renderer.setScissor(cx - size / 2, cy - offset - size, size, size);
         holoCameras[0].position.z += (targetZoom - holoCameras[0].position.z) * 0.1;
         // Rotation for screen
         holoCameras[0].up.set(0, 1, 0);
-        holoCameras[0].lookAt(0,0,0);
+        holoCameras[0].lookAt(0, 0, 0);
         renderer.render(scene, holoCameras[0]);
 
         // Right view (holoCameras[1] - +X)
-        renderer.setViewport(cx + offset, cy - size/2, size, size);
-        renderer.setScissor(cx + offset, cy - size/2, size, size);
+        renderer.setViewport(cx + offset, cy - size / 2, size, size);
+        renderer.setScissor(cx + offset, cy - size / 2, size, size);
         holoCameras[1].position.x += (targetZoom - holoCameras[1].position.x) * 0.1;
         // Rotate 90 deg counter-clockwise visually
-        holoCameras[1].up.set(1, 0, 0); 
-        holoCameras[1].lookAt(0,0,0);
+        holoCameras[1].up.set(1, 0, 0);
+        holoCameras[1].lookAt(0, 0, 0);
         renderer.render(scene, holoCameras[1]);
 
         // Top view (holoCameras[2] - -Z)
-        renderer.setViewport(cx - size/2, cy + offset, size, size);
-        renderer.setScissor(cx - size/2, cy + offset, size, size);
+        renderer.setViewport(cx - size / 2, cy + offset, size, size);
+        renderer.setScissor(cx - size / 2, cy + offset, size, size);
         holoCameras[2].position.z += (-targetZoom - holoCameras[2].position.z) * 0.1;
         // Upside down
         holoCameras[2].up.set(0, -1, 0);
-        holoCameras[2].lookAt(0,0,0);
+        holoCameras[2].lookAt(0, 0, 0);
         renderer.render(scene, holoCameras[2]);
 
         // Left view (holoCameras[3] - -X)
-        renderer.setViewport(cx - offset - size, cy - size/2, size, size);
-        renderer.setScissor(cx - offset - size, cy - size/2, size, size);
+        renderer.setViewport(cx - offset - size, cy - size / 2, size, size);
+        renderer.setScissor(cx - offset - size, cy - size / 2, size, size);
         holoCameras[3].position.x += (-targetZoom - holoCameras[3].position.x) * 0.1;
         // Rotate 90 deg clockwise visually
         holoCameras[3].up.set(-1, 0, 0);
-        holoCameras[3].lookAt(0,0,0);
+        holoCameras[3].lookAt(0, 0, 0);
         renderer.render(scene, holoCameras[3]);
     }
 }

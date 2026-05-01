@@ -1,8 +1,9 @@
 const voiceDisplay = document.getElementById('voice-display');
 const statusText = document.getElementById('status-text');
+const voiceStatus = document.getElementById('voice-status');
 
 // Define processCommand since we are removing websocket_client.js
-window.processCommand = function (cmd) {
+window.processCommand = function (cmd, extra = null) {
     switch (cmd) {
         case 'ROTATE':
         case 'ROTATE_RIGHT':
@@ -30,8 +31,11 @@ window.processCommand = function (cmd) {
 
         case 'ZOOM':
         case 'PINCH':
-            // Zoom is handled dynamically by pinch now, but if voice triggers it:
             window.zoomObject ? window.zoomObject() : null;
+            break;
+            
+        case 'JUMP':
+            if (extra) window.jumpToObject(extra);
             break;
     }
 };
@@ -41,36 +45,68 @@ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogni
 if (SpeechRecognition) {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
-    recognition.interimResults = false;
+    recognition.interimResults = true; // Use interim for faster feedback
     recognition.lang = 'en-US';
 
     recognition.onstart = function () {
         console.log("Browser Voice Recognition started.");
-        statusText.innerText = 'System Online (Local AI)';
+        statusText.innerText = 'CORE ONLINE';
         statusText.classList.remove('offline');
         statusText.classList.add('online');
     };
 
     recognition.onresult = function (event) {
-        const current = event.resultIndex;
-        const transcript = event.results[current][0].transcript.toLowerCase();
+        let interimTranscript = '';
+        let finalTranscript = '';
 
-        console.log("🎤 Heard: ", transcript);
-        let command = null;
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript.toLowerCase();
+            } else {
+                interimTranscript += event.results[i][0].transcript.toLowerCase();
+            }
+        }
 
-        if (transcript.match(/rotate right|spin right|turn right/)) command = 'ROTATE_RIGHT';
-        else if (transcript.match(/rotate left|spin left|turn left/)) command = 'ROTATE_LEFT';
-        else if (transcript.match(/rotate|spin|turn|start/)) command = 'ROTATE';
-        else if (transcript.match(/zoom|closer|bigger/)) command = 'ZOOM';
-        else if (transcript.match(/previous|back|before/)) command = 'PREV_OBJECT';
-        else if (transcript.match(/next|change|switch|another/)) command = 'NEXT_OBJECT';
-        else if (transcript.match(/stop|halt|pause|wait/)) command = 'STOP';
+        const transcript = finalTranscript || interimTranscript;
+        if (!transcript) return;
 
-        if (command) {
-            voiceDisplay.innerText = `"${transcript}" -> ${command}`;
-            window.processCommand(command);
-        } else {
-            voiceDisplay.innerText = `heard: ${transcript}`;
+        voiceStatus.innerText = `Voice: ${transcript.length > 20 ? '...' + transcript.slice(-20) : transcript}`;
+
+        if (finalTranscript) {
+            console.log("🎤 Final Heard: ", finalTranscript);
+            let command = null;
+            let extra = null;
+
+            // Direct Object Selection
+            const objectNames = ["cube", "sphere", "pyramid", "torus", "dna knot", "dodecahedron", "icosahedron", "cylinder", "octahedron", "ring"];
+            for (let name of objectNames) {
+                if (finalTranscript.includes(name)) {
+                    command = 'JUMP';
+                    extra = name;
+                    break;
+                }
+            }
+
+            if (!command) {
+                if (finalTranscript.match(/rotate right|spin right|turn right/)) command = 'ROTATE_RIGHT';
+                else if (finalTranscript.match(/rotate left|spin left|turn left/)) command = 'ROTATE_LEFT';
+                else if (finalTranscript.match(/rotate|spin|turn|start/)) command = 'ROTATE';
+                else if (finalTranscript.match(/zoom|closer|bigger/)) command = 'ZOOM';
+                else if (finalTranscript.match(/previous|back|before/)) command = 'PREV_OBJECT';
+                else if (finalTranscript.match(/next|change|switch|another/)) command = 'NEXT_OBJECT';
+                else if (finalTranscript.match(/stop|halt|pause|wait/)) command = 'STOP';
+            }
+
+            if (command) {
+                voiceDisplay.innerText = command + (extra ? `: ${extra}` : '');
+                window.processCommand(command, extra);
+                
+                // Visual Pulse
+                voiceDisplay.parentElement.style.boxShadow = "0 0 20px var(--accent)";
+                setTimeout(() => {
+                    voiceDisplay.parentElement.style.boxShadow = "none";
+                }, 500);
+            }
         }
     };
 

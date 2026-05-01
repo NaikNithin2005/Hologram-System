@@ -36,13 +36,13 @@ class VoiceRecognizer:
                 
                 try:
                     text = self.recognizer.recognize_google(audio).lower()
-                    print(f"🎤 Heard: '{text}'")
+                    print(f"Heard: '{text}'")
                     self._process_command(text)
                 except sr.UnknownValueError:
                     # Ignore unintelligible speech silently
                     pass
                 except sr.RequestError as e:
-                    print(f"⚠️ API Error (Google Speech): {e}")
+                    print(f"API Error (Google Speech): {e}")
                     
             except sr.WaitTimeoutError:
                 continue
@@ -62,7 +62,7 @@ class VoiceRecognizer:
             command = "STOP"
             
         if command and self.callback:
-            print(f"✅ Executing Voice Command: {command}")
+            print(f"Executing Voice Command: {command}")
             self.callback({"type": "VOICE", "command": command, "raw_text": text})
 
 if __name__ == "__main__":
