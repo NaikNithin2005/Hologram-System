@@ -110,33 +110,40 @@ if (SpeechRecognition) {
         }
     };
 
+    let isPermissionDenied = false;
+
     recognition.onerror = function (event) {
         console.error("Speech recognition error", event.error);
-        if (event.error === 'not-allowed') {
-            voiceDisplay.innerText = "Microphone Permission Denied";
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            isPermissionDenied = true;
+            voiceDisplay.innerText = "Mic Permission Blocked";
+            statusText.innerText = "CLICK HUD TO ENABLE MIC";
+            statusText.classList.remove('online');
+            statusText.classList.add('offline');
         }
     };
 
     recognition.onend = function () {
-        // Auto-restart listening if it stops
-        setTimeout(() => {
-            try {
-                recognition.start();
-            } catch (e) { }
-        }, 500);
+        // Auto-restart listening if it stops, but ONLY if not explicitly denied by user
+        if (!isPermissionDenied) {
+            setTimeout(() => {
+                try {
+                    recognition.start();
+                } catch (e) { }
+            }, 2000); // 2 second buffer to prevent aggressive re-prompting
+        }
     };
 
     let voiceInitialized = false;
 
     // Start it up - Browsers require user interaction to use the mic reliably!
     const startVoice = () => {
-        if (!voiceInitialized) {
-            try {
-                recognition.start();
-                voiceInitialized = true;
-                statusText.innerText = 'System Online (Listening)';
-            } catch (e) { }
-        }
+        isPermissionDenied = false; // Reset denial state on click
+        try {
+            recognition.start();
+            voiceInitialized = true;
+            statusText.innerText = 'System Online (Listening)';
+        } catch (e) { }
     };
 
     // Try starting immediately
