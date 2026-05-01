@@ -17,7 +17,8 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: 'Inter', sans-serif;
-    overflow: hidden; /* Prevent scrolling, as it's a fullscreen app */
+    overflow: hidden;
+    /* Prevent scrolling, as it's a fullscreen app */
 }
 
 #canvas-container {
@@ -36,7 +37,8 @@ body {
     width: 100%;
     height: 100%;
     z-index: 10;
-    pointer-events: none; /* Let clicks pass through to canvas if needed */
+    pointer-events: none;
+    /* Let clicks pass through to canvas if needed */
     padding: 2rem;
     display: flex;
     flex-direction: column;

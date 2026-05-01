@@ -46,11 +46,11 @@ function onResults(results) {
     let palmCenterY = null;
     let isIndexOnly = false;
     let isThumbOnly = false;
-    
+
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         for (let i = 0; i < results.multiHandLandmarks.length; i++) {
             const landmarks = results.multiHandLandmarks[i];
-            
+
             // Landmark indices
             const WRIST = 0;
             const THUMB_TIP = 4, THUMB_IP = 3, THUMB_MCP = 2;
@@ -59,52 +59,52 @@ function onResults(results) {
             const RING_TIP = 16, RING_PIP = 14;
             const PINKY_TIP = 20, PINKY_PIP = 18;
             const PINKY_BASE = 17;
-            
+
             // Check pinch on this hand
             const distThumbIndex = getDistance(landmarks[THUMB_TIP], landmarks[INDEX_TIP]);
             const middleClosed = getDistance(landmarks[MIDDLE_TIP], landmarks[WRIST]) < getDistance(landmarks[MIDDLE_PIP], landmarks[WRIST]);
             const ringClosed = getDistance(landmarks[RING_TIP], landmarks[WRIST]) < getDistance(landmarks[RING_PIP], landmarks[WRIST]);
             const pinkyClosed = getDistance(landmarks[PINKY_TIP], landmarks[WRIST]) < getDistance(landmarks[PINKY_PIP], landmarks[WRIST]);
-            
+
             if (middleClosed && ringClosed && pinkyClosed && distThumbIndex < 0.25) {
                 isPinching = true;
                 pinchDist = distThumbIndex;
             }
-            
+
             let fingersOpen = [false, false, false, false, false];
-            
+
             if (getDistance(landmarks[THUMB_TIP], landmarks[PINKY_BASE]) > getDistance(landmarks[THUMB_MCP], landmarks[PINKY_BASE])) {
                 fingersOpen[0] = true;
             }
-            
+
             if (getDistance(landmarks[INDEX_TIP], landmarks[WRIST]) > getDistance(landmarks[INDEX_PIP], landmarks[WRIST])) fingersOpen[1] = true;
             if (!middleClosed) fingersOpen[2] = true;
             if (!ringClosed) fingersOpen[3] = true;
             if (!pinkyClosed) fingersOpen[4] = true;
-            
+
             const openFingersCount = fingersOpen.filter(v => v).length;
             totalFingers += openFingersCount;
-            
+
             if (openFingersCount >= 4) {
                 isOpenPalm = true;
                 palmCenterX = landmarks[9].x;
                 palmCenterY = landmarks[9].y;
             }
-            
+
             // Thumb Only (Thumb open, others closed)
             if (fingersOpen[0] && !fingersOpen[1] && !fingersOpen[2] && !fingersOpen[3] && !fingersOpen[4]) {
                 isThumbOnly = true;
             }
-            
+
             // Index Only (Index open, others closed)
             if (!fingersOpen[0] && fingersOpen[1] && !fingersOpen[2] && !fingersOpen[3] && !fingersOpen[4]) {
                 isIndexOnly = true;
             }
         }
     }
-    
+
     let rawGesture = "None";
-    
+
     if (isPinching) {
         rawGesture = "PINCH";
     } else if (isThumbOnly) {
@@ -121,7 +121,7 @@ function onResults(results) {
         activeGesture = rawGesture;
         activeGestureStartTime = Date.now();
     }
-    
+
     let holdTime = Date.now() - activeGestureStartTime;
 
     if (activeGesture === "PINCH") {
@@ -159,7 +159,7 @@ function onResults(results) {
         if (lastAvgX !== null && lastAvgY !== null && palmCenterX !== null && palmCenterY !== null) {
             let dx = palmCenterX - lastAvgX;
             let dy = palmCenterY - lastAvgY;
-            
+
             if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
                 if (window.manualRotate) window.manualRotate(dx, dy);
             }
