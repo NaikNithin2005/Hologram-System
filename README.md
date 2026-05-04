@@ -1,4 +1,4 @@
-# 🌌 Intelligent Holographic Interaction System (Custom-Trained AI)
+# 🌌 Intelligent Virtual Holographic Interaction System 
 
 [![AI](https://img.shields.io/badge/AI-Custom%20Trained-blue.svg)]()
 [![3D](https://img.shields.io/badge/3D-Three.js-black.svg)]()
