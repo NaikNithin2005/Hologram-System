@@ -89,13 +89,13 @@ Voice interaction is powered by a model trained on real speech data:
 
 ## ✨ Key Features
 
-- 👐 Custom-trained gesture recognition system  
-- 🗣️ Voice commands trained on real datasets  
-- 📐 360° holographic projection  
-- 🎮 10+ interactive 3D objects  
-- ⚡ Low-latency real-time processing  
-- 🎯 High accuracy classification  
-- 🎨 Clean glassmorphism UI  
+-  Custom-trained gesture recognition system  
+-  Voice commands trained on real datasets  
+-  360° holographic projection  
+-  10+ interactive 3D objects  
+-  Low-latency real-time processing  
+-  High accuracy classification  
+-  Clean glassmorphism UI  
 
 ---
 
@@ -136,7 +136,7 @@ Voice interaction is powered by a model trained on real speech data:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/YourUsername/Hologram-System.git
+   git clone https://github.com/NaikNithin2005/Hologram-System.git
    cd Hologram-System
    ```
 
