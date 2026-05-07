@@ -33,7 +33,7 @@ window.processCommand = function (cmd, extra = null) {
         case 'PINCH':
             window.zoomObject ? window.zoomObject() : null;
             break;
-            
+
         case 'JUMP':
             if (extra) window.jumpToObject(extra);
             break;
@@ -100,7 +100,7 @@ if (SpeechRecognition) {
             if (command) {
                 voiceDisplay.innerText = command + (extra ? `: ${extra}` : '');
                 window.processCommand(command, extra);
-                
+
                 // Visual Pulse
                 voiceDisplay.parentElement.style.boxShadow = "0 0 20px var(--accent)";
                 setTimeout(() => {
