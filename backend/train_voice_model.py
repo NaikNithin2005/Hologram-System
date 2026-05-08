@@ -12,7 +12,7 @@ TARGET_LEN = 22050
 SAMPLES_PER_WORD = 500
 
 DATA_DIR = 'voice_data'
-AUGMENTATIONS_PER_SAMPLE = 50 # Create 50 variations of each real recording
+AUGMENTATIONS_PER_SAMPLE = 50
 
 def augment_audio(audio_data):
     noise_amp = 0.05 * np.random.uniform() * np.amax(audio_data)
